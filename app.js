@@ -28,7 +28,12 @@ $(document).ready(function() {
     recordsTableDT = $('#all-records-dt').DataTable({ ...dtOptions, pageLength: 10 });
 });
 
-// --- التنقل والصلاحيات ---
+// --- التنقل والصلاحيات وفتح القائمة في الجوال ---
+window.toggleSidebar = () => {
+    document.getElementById('mainSidebar').classList.toggle('active-mobile');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+};
+
 const navTriggers = document.querySelectorAll('.nav-item');
 const views = document.querySelectorAll('.view-section');
 
@@ -45,10 +50,13 @@ navTriggers.forEach(item => {
         
         views.forEach(view => view.classList.remove('active'));
         document.getElementById(targetView).classList.add('active');
+        
+        // إغلاق القائمة في الموبايل عند النقر
+        if(window.innerWidth <= 768) window.toggleSidebar();
     });
 });
 
-// --- تسجيل الدخول (حساب Noragami الافتراضي يحتوي على صلاحية الحذف) ---
+// --- تسجيل الدخول ---
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const userVal = document.getElementById('username').value.trim();
@@ -117,7 +125,7 @@ window.openEvalModal = (id, name) => {
 };
 window.closeModal = (id) => document.getElementById(id).classList.remove('active');
 
-// --- المهارات واللغات الديناميكية ---
+// --- المهارات واللغات ---
 window.addSkillRow = () => {
     document.getElementById('skills-container').insertAdjacentHTML('beforeend', `<div class="skill-row"><input type="text" class="skill-input" placeholder="اكتب مهارة..."></div>`);
 };
@@ -159,14 +167,14 @@ document.getElementById('candidateForm').addEventListener('submit', async (e) =>
     } catch (error) { alert('حدث خطأ أثناء الحفظ.'); }
 });
 
-// --- دالة حذف متقدم (تتطلب صلاحية الحذف) ---
+// --- حذف المتقدم ---
 window.deleteCandidate = async (id) => {
     if(!currentUserPerms.includes('delete-privilege')) {
         alert("عذراً، أنت لا تملك صلاحية لحذف السجلات!");
         return;
     }
     
-    if(confirm("تحذير: هل أنت متأكد من رغبتك بحذف هذا المتقدم نهائياً؟ (لا يمكن التراجع عن هذا الإجراء)")) {
+    if(confirm("تحذير: هل أنت متأكد من رغبتك بحذف هذا المتقدم نهائياً؟")) {
         try {
             await remove(ref(db, `candidates/${id}`));
             alert("تم حذف المتقدم بنجاح.");
@@ -176,7 +184,7 @@ window.deleteCandidate = async (id) => {
     }
 };
 
-// --- جلب البيانات والتحديث اللحظي ---
+// --- جلب البيانات ---
 function fetchAndListenToData() {
     const candidatesRef = ref(db, 'candidates');
     onValue(candidatesRef, (snapshot) => {
@@ -207,13 +215,10 @@ function fetchAndListenToData() {
 
                 const locText = data.interviewLoc || 'غير محدد';
                 
-                // مواعيد اليوم
                 const appDate = new Date(data.interviewDate);
                 if (appDate.toDateString() === todayDateString) {
                     hasTodayApps = true;
                     const timeString = appDate.toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' });
-                    
-                    // إضافة زر الإلغاء في مواعيد اليوم لأصحاب الصلاحية
                     const cancelBtn = currentUserPerms.includes('delete-privilege') ? `<button class="btn-outline-red" style="padding: 2px 8px; font-size:11px; float:left; margin-top:-5px;" onclick="deleteCandidate('${id}')"><i class="fa-solid fa-trash"></i> إلغاء الموعد</button>` : '';
 
                     todayList.innerHTML += `
@@ -225,7 +230,6 @@ function fetchAndListenToData() {
                         </div>`;
                 }
 
-                // زر الحذف وإعادة المقابلة في الجداول
                 const deleteBtn = currentUserPerms.includes('delete-privilege') ? `<button class="btn-outline-red" style="font-size:12px; margin-right:5px;" onclick="deleteCandidate('${id}')"><i class="fa-solid fa-trash"></i> حذف</button>` : '';
                 const reEvalBtn = `<button class="btn-accent-solid" style="padding: 5px 12px; font-size:12px; display:inline-block;" onclick="openEvalModal('${id}', '${data.fullName}')"><i class="fa-solid fa-rotate"></i> مقابلة</button>`;
 
@@ -240,7 +244,6 @@ function fetchAndListenToData() {
                     `<div style="display:flex;">${reEvalBtn} ${deleteBtn}</div>` 
                 ]);
 
-                // كروت إجراء المقابلات
                 if (data.status === 'لم تتم المقابلة' || data.status === 'يؤجل') {
                     const deleteCardBtn = currentUserPerms.includes('delete-privilege') ? `<button class="btn-outline-red w-100 mt-10" onclick="deleteCandidate('${id}')"><i class="fa-solid fa-trash"></i> إلغاء وحذف</button>` : '';
                     
