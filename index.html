@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المقابلات الاحترافي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-view" class="view-section active login-page-bg">
+        <div class="login-split-container">
+            <div class="login-brand-side">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-circle-nodes"></i> نظام المقابلات
+                </div>
+                <h1 class="welcome-title">أهلاً بك،<br>مرحباً!</h1>
+                <p class="welcome-text">نظام الإدارة الذكي لتنظيم وجدولة مقابلات العمل بكفاءة عالية واحترافية.</p>
+            </div>
+            
+            <div class="login-form-side">
+                <form id="loginForm" class="modern-login-form">
+                    <div class="input-modern-wrapper">
+                        <i class="fa-regular fa-user text-muted"></i>
+                        <input type="text" id="username" placeholder="اسم المستخدم" required>
+                    </div>
+                    <div class="input-modern-wrapper">
+                        <i class="fa-solid fa-lock text-muted"></i>
+                        <input type="password" id="password" placeholder="كلمة المرور" required>
+                    </div>
+                    <button type="submit" class="btn-login-solid">تسجيل الدخول</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- هيكل التطبيق الأساسي -->
+    <div id="app-layout" class="app-wrapper" style="display: none;">
+        
+        <aside class="sidebar-dark">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-fingerprint text-accent"></i> <span>المقابلات الذكي</span>
+            </div>
+            
+            <ul class="sidebar-nav mt-40">
+                <li class="nav-item active" data-target="dashboard-view"><i class="fa-solid fa-chart-pie"></i> لوحة التحكم</li>
+                <li class="nav-item" data-target="interviews-view"><i class="fa-solid fa-users-viewfinder"></i> إجراء المقابلات</li>
+                <li class="nav-item" data-target="records-view"><i class="fa-solid fa-folder-open"></i> السجل العام</li>
+                <li class="nav-item admin-only" data-target="reports-view"><i class="fa-solid fa-chart-line"></i> التقارير والإحصائيات</li>
+                <li class="nav-item admin-only" data-target="users-view"><i class="fa-solid fa-user-shield"></i> إدارة المستخدمين</li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="welcome-msg">
+                    <h2 id="welcome-text">مرحباً بك، <span>---</span> <i class="fa-solid fa-hand-wave text-accent"></i></h2>
+                    <p class="text-muted text-small">إليك نظرة عامة على نشاط النظام اليوم.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-accent-solid" onclick="openAddCandidateModal()">
+                        <i class="fa-solid fa-plus"></i> متقدم جديد
+                    </button>
+                </div>
+            </header>
+
+            <div class="views-container">
+                
+                <!-- لوحة التحكم -->
+                <div id="dashboard-view" class="view-section active">
+                    <div class="dashboard-layout">
+                        <div class="dashboard-main">
+                            <div class="stats-grid">
+                                <div class="stat-box">
+                                    <div class="stat-icon bg-blue"><i class="fa-solid fa-users"></i></div>
+                                    <div class="stat-data"><p>إجمالي المتقدمين</p><h3 id="stat-total">0</h3></div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon bg-green"><i class="fa-solid fa-check-double"></i></div>
+                                    <div class="stat-data"><p>المقبولون</p><h3 id="stat-accepted">0</h3></div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon bg-orange"><i class="fa-solid fa-hourglass-half"></i></div>
+                                    <div class="stat-data"><p>قيد الانتظار</p><h3 id="stat-pending">0</h3></div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon bg-red"><i class="fa-solid fa-ban"></i></div>
+                                    <div class="stat-data"><p>المرفوضون</p><h3 id="stat-rejected">0</h3></div>
+                                </div>
+                            </div>
+
+                            <div class="content-card mt-20">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-bolt text-accent"></i> أحدث المقابلات النشطة</h3>
+                                </div>
+                                <div class="datatable-container">
+                                    <table id="recent-interviews-dt" class="display" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>الاسم</th>
+                                                <th>الموعد والموقع</th>
+                                                <th>الحالة</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- مواعيد اليوم -->
+                        <div class="dashboard-sidebar">
+                            <div class="content-card appointments-card">
+                                <div class="card-header mb-20">
+                                    <h3><i class="fa-solid fa-calendar-day text-accent"></i> مواعيد اليوم</h3>
+                                </div>
+                                <div class="appointments-list" id="today-appointments-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- إجراء المقابلات -->
+                <div id="interviews-view" class="view-section">
+                    <div class="card-header mb-20"><h3>إجراء المقابلات المعلقة</h3></div>
+                    <div class="cards-grid" id="candidates-cards"></div>
+                </div>
+
+                <!-- السجل العام -->
+                <div id="records-view" class="view-section">
+                    <div class="content-card">
+                        <div class="card-header mb-20"><h3>السجل الشامل للمتقدمين</h3></div>
+                        <div class="datatable-container">
+                            <table id="all-records-dt" class="display" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>السكن والموقع</th>
+                                        <th>المهارات</th>
+                                        <th>المقابلات</th>
+                                        <th>الحالة</th>
+                                        <th>الإجراءات</th> <!-- تم تغيير الاسم ليشمل الحذف والإعادة -->
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- التقارير -->
+                <div id="reports-view" class="view-section">
+                    <div class="content-card">
+                        <div class="card-header mb-20"><h3>تقرير النظام الشامل</h3></div>
+                        <div class="report-summary">
+                            <div class="report-item"><span class="label">نسبة القبول:</span> <span class="value text-green" id="rep-accept-rate">0%</span></div>
+                            <div class="report-item"><span class="label">نسبة الرفض:</span> <span class="value text-red" id="rep-reject-rate">0%</span></div>
+                            <div class="report-item"><span class="label">إجمالي المقابلات المجراة:</span> <span class="value" id="rep-total-interviews">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- إدارة المستخدمين -->
+                <div id="users-view" class="view-section">
+                    <div class="form-grid">
+                        <div class="content-card">
+                            <div class="card-header mb-20"><h3>إضافة مستخدم جديد</h3></div>
+                            <form id="addUserForm" class="modern-form">
+                                <div class="input-group">
+                                    <label>اسم المستخدم</label>
+                                    <input type="text" id="newUsername" required>
+                                </div>
+                                <div class="input-group mt-10">
+                                    <label>كلمة المرور</label>
+                                    <input type="password" id="newPassword" required>
+                                </div>
+                                <div class="input-group mt-10">
+                                    <label>الصلاحيات المتوفرة</label>
+                                    <div class="permissions-list">
+                                        <label><input type="checkbox" class="perm-cb" value="dashboard-view" checked> لوحة التحكم</label>
+                                        <label><input type="checkbox" class="perm-cb" value="interviews-view" checked> المقابلات</label>
+                                        <label><input type="checkbox" class="perm-cb" value="records-view" checked> السجل العام</label>
+                                        <label><input type="checkbox" class="perm-cb" value="reports-view"> التقارير</label>
+                                        <label><input type="checkbox" class="perm-cb" value="users-view"> المستخدمين</label>
+                                        <hr style="border-top:1px solid #e2e8f0; margin:5px 0;">
+                                        <label class="text-red text-bold"><input type="checkbox" class="perm-cb" value="delete-privilege"> صلاحية الحذف والإلغاء <i class="fa-solid fa-trash"></i></label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-accent-solid mt-20 w-100">إنشاء مستخدم</button>
+                            </form>
+                        </div>
+                        <div class="content-card">
+                            <div class="card-header mb-20"><h3>المستخدمون الحاليون</h3></div>
+                            <ul id="users-list" class="styled-list"></ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- النوافذ المنبثقة -->
+    <div id="addCandidateModal" class="modal-overlay">
+        <div class="modal-content-large">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus text-accent"></i> إضافة متقدم جديد</h3>
+                <button class="close-btn" onclick="closeModal('addCandidateModal')"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="candidateForm" class="modern-form">
+                    <div class="form-grid">
+                        <div class="input-group"><label>الاسم الكامل</label><input type="text" id="candName" required></div>
+                        <div class="input-group"><label>العمر</label><input type="number" id="candAge" required></div>
+                        <div class="input-group"><label>السكن</label><input type="text" id="candLocation" required></div>
+                        <div class="input-group"><label>رقم الهاتف</label><input type="text" id="candPhone" required></div>
+                        <div class="input-group"><label>موعد المقابلة</label><input type="datetime-local" id="candDate" required></div>
+                        <div class="input-group">
+                            <label>موقع المقابلة</label>
+                            <select id="candInterviewLoc" class="styled-select" required>
+                                <option value="الجزائر">الجزائر</option>
+                                <option value="السراجي">السراجي</option>
+                                <option value="اونلاين">اونلاين</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr class="divider">
+                    <div class="form-grid">
+                        <div class="dynamic-section">
+                            <label class="section-label">المهارات التقنية والشخصية</label>
+                            <div id="skills-container">
+                                <div class="skill-row"><input type="text" class="skill-input" placeholder="اكتب مهارة (مثال: إدارة الوقت)"></div>
+                            </div>
+                            <button type="button" class="btn-add-row" onclick="addSkillRow()">+ إضافة مهارة أخرى</button>
+                        </div>
+                        <div class="dynamic-section">
+                            <label class="section-label">اللغات والمستوى</label>
+                            <div id="langs-container">
+                                <div class="lang-row">
+                                    <input type="text" class="lang-name" placeholder="اللغة">
+                                    <select class="lang-level">
+                                        <option value="مبتدئ">مبتدئ</option><option value="متوسط">متوسط</option>
+                                        <option value="متقدم">متقدم</option><option value="محترف">محترف</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-row" onclick="addLangRow()">+ إضافة لغة جديدة</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-20">
+                        <button type="submit" class="btn-accent-solid">حفظ البيانات والموعد</button>
+                        <button type="button" class="btn-outline-dark" onclick="closeModal('addCandidateModal')">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التقييم -->
+    <div id="evaluationModal" class="modal-overlay">
+        <div class="modal-content-clean">
+            <div class="modal-header">
+                <h3 id="modalName">إجراء المقابلة</h3>
+                <button class="close-btn" onclick="closeModal('evaluationModal')"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="evalForm" class="modern-form">
+                    <div class="score-container mt-10 mb-20">
+                        <label>التقييم العام للمتقدم: <span id="scoreValue" class="text-accent text-bold">5</span> / 10</label>
+                        <input type="range" id="evalScore" min="1" max="10" value="5" class="styled-slider" oninput="document.getElementById('scoreValue').innerText = this.value">
+                    </div>
+                    <div class="input-group mt-10">
+                        <label><i class="fa-solid fa-plus-circle text-green"></i> الإيجابيات ونقاط القوة</label>
+                        <textarea id="evalPros" rows="2" placeholder="ما الذي لفت انتباهك في المتقدم؟"></textarea>
+                    </div>
+                    <div class="input-group mt-10">
+                        <label><i class="fa-solid fa-minus-circle text-red"></i> السلبيات ونقاط الضعف</label>
+                        <textarea id="evalCons" rows="2" placeholder="ما هي الجوانب التي يحتاج لتطويرها؟"></textarea>
+                    </div>
+                    <div class="input-group mt-10">
+                        <label><i class="fa-solid fa-gavel"></i> القرار النهائي (الحالة)</label>
+                        <select id="evalStatus" class="styled-select">
+                            <option value="مقبول">مقبول</option>
+                            <option value="مرفوض">مرفوض</option>
+                            <option value="يؤجل">يؤجل</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer mt-20">
+                        <button type="submit" class="btn-accent-solid w-100">اعتماد التقييم وحفظ السجل</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
