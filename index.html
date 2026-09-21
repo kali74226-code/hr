@@ -2,7 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- السطر التالي هو السر لمنع تشوه التصميم والتقريب العشوائي في الآيفون -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>نظام إدارة المقابلات الاحترافي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -41,10 +42,8 @@
     <!-- هيكل التطبيق الأساسي -->
     <div id="app-layout" class="app-wrapper" style="display: none;">
         
-        <!-- غطاء الخلفية للهواتف المحمولة -->
         <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-        <!-- القائمة الجانبية -->
         <aside class="sidebar-dark" id="mainSidebar">
             <div class="sidebar-logo">
                 <i class="fa-solid fa-fingerprint text-accent"></i> <span>المقابلات الذكي</span>
@@ -63,11 +62,9 @@
             </div>
         </aside>
 
-        <!-- المحتوى الرئيسي -->
         <main class="main-content">
             <header class="top-header">
                 <div style="display: flex; align-items: center;">
-                    <!-- زر القائمة للهواتف -->
                     <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                     <div class="welcome-msg">
                         <h2 id="welcome-text">مرحباً بك، <span>---</span> <i class="fa-solid fa-hand-wave text-accent"></i></h2>
@@ -83,7 +80,6 @@
 
             <div class="views-container">
                 
-                <!-- لوحة التحكم -->
                 <div id="dashboard-view" class="view-section active">
                     <div class="dashboard-layout">
                         <div class="dashboard-main">
@@ -125,7 +121,6 @@
                             </div>
                         </div>
 
-                        <!-- مواعيد اليوم -->
                         <div class="dashboard-sidebar">
                             <div class="content-card appointments-card">
                                 <div class="card-header mb-20">
@@ -137,13 +132,11 @@
                     </div>
                 </div>
 
-                <!-- إجراء المقابلات -->
                 <div id="interviews-view" class="view-section">
                     <div class="card-header mb-20"><h3>إجراء المقابلات المعلقة</h3></div>
                     <div class="cards-grid" id="candidates-cards"></div>
                 </div>
 
-                <!-- السجل العام -->
                 <div id="records-view" class="view-section">
                     <div class="content-card">
                         <div class="card-header mb-20"><h3>السجل الشامل للمتقدمين</h3></div>
@@ -165,7 +158,6 @@
                     </div>
                 </div>
 
-                <!-- التقارير -->
                 <div id="reports-view" class="view-section">
                     <div class="content-card">
                         <div class="card-header mb-20"><h3>تقرير النظام الشامل</h3></div>
@@ -177,7 +169,6 @@
                     </div>
                 </div>
 
-                <!-- إدارة المستخدمين -->
                 <div id="users-view" class="view-section">
                     <div class="form-grid">
                         <div class="content-card">
@@ -221,7 +212,7 @@
     <div id="addCandidateModal" class="modal-overlay">
         <div class="modal-content-large">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-user-plus text-accent"></i> إضافة متقدم جديد</h3>
+                <h3><i class="fa-solid fa-user-plus text-accent"></i> متقدم جديد</h3>
                 <button class="close-btn" onclick="closeModal('addCandidateModal')"><i class="fa-solid fa-times"></i></button>
             </div>
             <div class="modal-body">
@@ -265,8 +256,7 @@
                         </div>
                     </div>
                     <div class="modal-footer mt-20">
-                        <button type="submit" class="btn-accent-solid">حفظ البيانات والموعد</button>
-                        <button type="button" class="btn-outline-dark" onclick="closeModal('addCandidateModal')">إلغاء</button>
+                        <button type="submit" class="btn-accent-solid w-100">حفظ البيانات والموعد</button>
                     </div>
                 </form>
             </div>
