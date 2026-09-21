@@ -41,7 +41,11 @@
     <!-- هيكل التطبيق الأساسي -->
     <div id="app-layout" class="app-wrapper" style="display: none;">
         
-        <aside class="sidebar-dark">
+        <!-- غطاء الخلفية للهواتف المحمولة -->
+        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar-dark" id="mainSidebar">
             <div class="sidebar-logo">
                 <i class="fa-solid fa-fingerprint text-accent"></i> <span>المقابلات الذكي</span>
             </div>
@@ -59,11 +63,16 @@
             </div>
         </aside>
 
+        <!-- المحتوى الرئيسي -->
         <main class="main-content">
             <header class="top-header">
-                <div class="welcome-msg">
-                    <h2 id="welcome-text">مرحباً بك، <span>---</span> <i class="fa-solid fa-hand-wave text-accent"></i></h2>
-                    <p class="text-muted text-small">إليك نظرة عامة على نشاط النظام اليوم.</p>
+                <div style="display: flex; align-items: center;">
+                    <!-- زر القائمة للهواتف -->
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                    <div class="welcome-msg">
+                        <h2 id="welcome-text">مرحباً بك، <span>---</span> <i class="fa-solid fa-hand-wave text-accent"></i></h2>
+                        <p class="text-muted text-small">إليك نظرة عامة على نشاط النظام اليوم.</p>
+                    </div>
                 </div>
                 <div class="header-actions">
                     <button class="btn-accent-solid" onclick="openAddCandidateModal()">
@@ -81,7 +90,7 @@
                             <div class="stats-grid">
                                 <div class="stat-box">
                                     <div class="stat-icon bg-blue"><i class="fa-solid fa-users"></i></div>
-                                    <div class="stat-data"><p>إجمالي المتقدمين</p><h3 id="stat-total">0</h3></div>
+                                    <div class="stat-data"><p>المتقدمين</p><h3 id="stat-total">0</h3></div>
                                 </div>
                                 <div class="stat-box">
                                     <div class="stat-icon bg-green"><i class="fa-solid fa-check-double"></i></div>
@@ -147,7 +156,7 @@
                                         <th>المهارات</th>
                                         <th>المقابلات</th>
                                         <th>الحالة</th>
-                                        <th>الإجراءات</th> <!-- تم تغيير الاسم ليشمل الحذف والإعادة -->
+                                        <th>الإجراءات</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
